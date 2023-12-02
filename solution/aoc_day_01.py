@@ -1,5 +1,4 @@
 # aoc_day_01.py
-import re
 
 from solution.aoc_base import AocBaseClass
 
