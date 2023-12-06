@@ -1,4 +1,5 @@
-# aoc_day_06.py
+# aoc_day_06.py - v2 idea from: gahjelle
+import math
 import re
 
 from solution.aoc_base import AocBaseClass
@@ -6,51 +7,36 @@ from solution.aoc_base import AocBaseClass
 
 class AocSolution(AocBaseClass):
     def _parse(self, puzzle_input):
-        lists = []
+        list_1, list_2 = [], []
         for line in puzzle_input.split("\n"):
-            lists.append(list(map(int, re.findall(r"\d+", line))))
-        return lists
+            numbers = re.findall(r"\d+", line)
+            list_1.append(tuple(map(int, numbers)))
+            list_2.append(numbers)
+        return tuple(zip(*list_1)), (
+            int("".join(number for number in list_2[0])),
+            int("".join(number for number in list_2[1])),
+        )
 
     DAY = 6
 
     @staticmethod
     def ways_to_beat_record(time, distance):
-        ways = 0
-        for hold_time in range(time):
-            boat_speed = hold_time
-            travel_time = time - hold_time
-            total_distance = boat_speed * travel_time
-            if total_distance > distance:
-                ways += 1
-        return ways
-
-    @staticmethod
-    def multiply_ways(records):
-        result = 1
-        for record in records:
-            result *= record
-        return result
-
-    def calculate_winning_ways(self, times, distances):
-        ways_records = [
-            self.ways_to_beat_record(t, d) for t, d in zip(times, distances)
-        ]
-        result = 1
-        for record in ways_records:
-            result *= record
-        return result
+        hold_time = 0
+        for hold_time in range(distance // time, time):
+            if hold_time * (time - hold_time) > distance:
+                break
+        return (time + 1) - 2 * hold_time
 
     def part1(self):
         """Solve part 1"""
-        return self.calculate_winning_ways(*self.data)
+        return math.prod(
+            self.ways_to_beat_record(time, distance) for time, distance in self.data[0]
+        )
 
     def part2(self):
         """Solve part 2"""
-        times, distances = [str(number) for number in self.data[0]], [
-            str(number) for number in self.data[1]
-        ]
-        times, distances = [int("".join(times))], [int("".join(distances))]
-        return self.calculate_winning_ways(times, distances)
+        time, distance = self.data[1]
+        return self.ways_to_beat_record(time, distance)
 
 
 if __name__ == "__main__":
