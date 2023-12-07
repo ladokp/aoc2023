@@ -1,5 +1,4 @@
 # aoc_day_07.py
-import functools
 from collections import Counter
 
 from solution.aoc_base import AocBaseClass
@@ -33,7 +32,9 @@ class AocSolution(AocBaseClass):
             if "1" in counter and target != "1":
                 counter[target] += counter["1"]
                 del counter["1"]
-            assert "1" not in counter or list(counter.keys()) == ["1"], f"{counter} {hand}"
+            assert "1" not in counter or list(counter.keys()) == [
+                "1"
+            ], f"{counter} {hand}"
 
         if sorted(counter.values()) == [5]:
             return 10, hand
