@@ -1,5 +1,5 @@
 # aoc_day_08.py
-from math import gcd
+from math import lcm
 
 from solution.aoc_base import AocBaseClass
 
@@ -11,25 +11,16 @@ class AocSolution(AocBaseClass):
         instructions = blocks[0]
         for line in blocks[1].split("\n"):
             nodes[line[:3]] = {"L": line[7:10], "R": line[12:15]}
-        return instructions, nodes
+        return instructions, len(instructions), nodes
 
     DAY = 8
 
     def count_steps(self, start_address="AAA", end_address="ZZZ"):
-        def lcm(xs):
-            ans = 1
-            for x in xs:
-                ans = (x * ans) // gcd(x, ans)
-            return ans
-
-        instructions, nodes = self.data
-        instructions_length = len(instructions)
-        nodes_list = []
+        instructions, instructions_length, nodes = self.data
+        nodes_list, total_steps, steps = [], {}, 0
         for node in nodes:
             if node.endswith(start_address):
                 nodes_list.append(node)
-        total_steps = {}
-        steps = 0
         while True:
             next_nodes = []
             for index, current_node in enumerate(nodes_list):
@@ -39,7 +30,7 @@ class AocSolution(AocBaseClass):
                 if current_node.endswith(end_address):
                     total_steps[index] = steps + 1
                     if len(total_steps) == len(nodes_list):
-                        return lcm(total_steps.values())
+                        return lcm(*total_steps.values())
                 next_nodes.append(current_node)
             nodes_list = next_nodes
             steps += 1

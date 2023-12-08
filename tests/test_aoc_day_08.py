@@ -19,6 +19,7 @@ def test_parse_test_solution(test_solution):
     """Test if input is parsed properly"""
     assert test_solution.data == (
         "LR",
+        2,
         {
             "11A": {"L": "11B", "R": "XXX"},
             "11B": {"L": "XXX", "R": "11Z"},
