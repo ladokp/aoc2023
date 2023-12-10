@@ -63,44 +63,41 @@ class AocSolution(AocBaseClass):
 
     def part1(self):
         """Solve part 1"""
-        s = 0
+        distance = 0
         _, loop = self.get_loop()
         if len(loop) % 2 == 1:
-            s = (len(loop) - 1) // 2
-        return s
+            distance = (len(loop) - 1) // 2
+        return distance
 
     def part2(self):
         """Solve part 2"""
-        s = 0
+        distance = 0
         conn, loop = self.get_loop()
         for x in range(len(self.data)):
-            in_loop = False
-            enter = 0
+            in_loop, enter = False, 0
             for y in range(len(self.data[0])):
-                if (x, y) in loop:
-                    if enter == 0:
-                        if EAST in conn[x][y]:
-                            if NORTH in conn[x][y]:
-                                enter = -1
-                            elif SOUTH in conn[x][y]:
-                                enter = 1
-                        else:
-                            in_loop = not in_loop
-                    else:
-                        if EAST in conn[x][y]:
-                            pass
+                if (is_coordinate_in_loop := (x, y) in loop) and enter == 0:
+                    if EAST in conn[x][y]:
+                        if NORTH in conn[x][y]:
+                            enter = -1
                         elif SOUTH in conn[x][y]:
-                            if enter == -1:
-                                in_loop = not in_loop
-                            enter = 0
-                        elif NORTH in conn[x][y]:
-                            if enter == 1:
-                                in_loop = not in_loop
-                            enter = 0
-                else:
-                    if in_loop:
-                        s += 1
-        return s
+                            enter = 1
+                    else:
+                        in_loop = not in_loop
+                if is_coordinate_in_loop:
+                    if EAST in conn[x][y]:
+                        pass
+                    elif SOUTH in conn[x][y]:
+                        if enter == -1:
+                            in_loop = not in_loop
+                        enter = 0
+                    elif NORTH in conn[x][y]:
+                        if enter == 1:
+                            in_loop = not in_loop
+                        enter = 0
+                if not is_coordinate_in_loop and in_loop:
+                    distance += 1
+        return distance
 
 
 if __name__ == "__main__":
