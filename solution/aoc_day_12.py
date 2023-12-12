@@ -38,28 +38,20 @@ class AocSolution(AocBaseClass):
         self.SCORES[key] = score
         return self.SCORES[key]
 
-    def part1(self):
+    def part1(self, factor=1):
         """Solve part 1"""
         answer = 0
         for line in self.data:
             self.SCORES.clear()
             dots, blocks = line.split()
-            blocks = [int(x) for x in blocks.split(",")]
-            score = self.expand(dots, blocks, 0, 0, 0)
-            answer += score
+            dots = "?".join([dots] * factor)
+            blocks = [int(x) for x in ",".join([blocks] * factor).split(",")]
+            answer += self.expand(dots, blocks, 0, 0, 0)
         return answer
 
     def part2(self):
         """Solve part 2"""
-        answer = 0
-        for line in self.data:
-            self.SCORES.clear()
-            dots, blocks = line.split()
-            dots = "?".join([dots, dots, dots, dots, dots])
-            blocks = [int(x) for x in ",".join([blocks] * 5).split(",")]
-            score = self.expand(dots, blocks, 0, 0, 0)
-            answer += score
-        return answer
+        return self.part1(5)
 
 
 if __name__ == "__main__":
