@@ -44,6 +44,8 @@ class AocSolution(AocBaseClass):
                     and is_not_reverse
                     and is_valid
                 ):
+                    if (new_row, new_column, new_direction, new_in_direction) in cache:
+                        continue
                     heapq.heappush(
                         current,
                         (
@@ -58,7 +60,11 @@ class AocSolution(AocBaseClass):
         return min(
             value
             for (row, column, direction, in_direction), value in cache.items()
-            if row == rows - 1 and column == columns - 1
+            if (
+                row == rows - 1
+                and column == columns - 1
+                and (in_direction >= 4 or not part2)
+            )
         )
 
     def part1(self):
