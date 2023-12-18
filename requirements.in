@@ -7,5 +7,6 @@ numpy
 parse
 pip-tools
 pytest
+shapely
 sphinx
 z3-solver
