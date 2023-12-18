@@ -17,22 +17,22 @@ def exercise_solution():
 
 def test_parse_test_solution(test_solution):
     """Test if input is parsed properly"""
-    assert test_solution.data == [
-        "R 6 (#70c710)",
-        "D 5 (#0dc571)",
-        "L 2 (#5713f0)",
-        "D 2 (#d2c081)",
-        "R 2 (#59c680)",
-        "D 2 (#411b91)",
-        "L 5 (#8ceee2)",
-        "U 2 (#caa173)",
-        "L 1 (#1b58a2)",
-        "U 2 (#caa171)",
-        "R 2 (#7807d2)",
-        "U 3 (#a77fa3)",
-        "L 2 (#015232)",
-        "U 2 (#7a21e3)",
-    ]
+    assert test_solution.data == (
+        ("R", 6, "R", 461937),
+        ("D", 5, "D", 56407),
+        ("L", 2, "R", 356671),
+        ("D", 2, "D", 863240),
+        ("R", 2, "R", 367720),
+        ("D", 2, "D", 266681),
+        ("L", 5, "L", 577262),
+        ("U", 2, "U", 829975),
+        ("L", 1, "L", 112010),
+        ("U", 2, "D", 829975),
+        ("R", 2, "L", 491645),
+        ("U", 3, "U", 686074),
+        ("L", 2, "L", 5411),
+        ("U", 2, "U", 500254),
+    )
 
 
 def test_part1_test_solution(test_solution):
