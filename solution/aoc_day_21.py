@@ -1,59 +1,105 @@
 # aoc_day_21.py
+from collections import deque
 
 from solution.aoc_base import AocBaseClass
 
 
 class AocSolution(AocBaseClass):
     def _parse(self, puzzle_input):
-        return [list(line) for line in puzzle_input.split("\n")]
+        lines = [list(line) for line in puzzle_input.split("\n")]
+        start_row, start_column = 0, 0
+
+        for row_index in range(len(lines)):
+            for column_index in range(len(lines[0])):
+                if lines[row_index][column_index] == "S":
+                    start_row, start_column = row_index, column_index
+
+        return lines, len(lines), len(lines[0]), start_row, start_column
 
     DAY = 21
 
-    @staticmethod
-    def is_valid_pos(layout, pos):
-        return all(
-            (pos[0] >= 0, pos[0] < len(layout), pos[1] >= 0, pos[1] < len(layout[0]))
-        )
+    SOLVE = {}
 
-    @staticmethod
-    def get_starting_point(layout):
-        for y, _ in enumerate(layout):
-            for x, _ in enumerate(layout[0]):
-                if layout[y][x] == "S":
-                    return y, x
-
-    def take_one_step(self, layout, position):
-        new_start_position = set()
-        for direction in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            new_position = (position[0] + direction[0], position[1] + direction[1])
-            if (
-                self.is_valid_pos(layout, new_position)
-                and layout[new_position[0]][new_position[1]] != "#"
+    def find_d(self, row, column):
+        grid, rows, columns, start_row, start_column = self.data
+        set_ = {}
+        queue = deque([(0, 0, start_row, start_column, 0)])
+        while queue:
+            t_row, t_column, row, column, d = queue.popleft()
+            if row < 0:
+                t_row -= 1
+                row += rows
+            if row >= rows:
+                t_row += 1
+                row -= rows
+            if column < 0:
+                t_column -= 1
+                column += columns
+            if column >= columns:
+                t_column += 1
+                column -= columns
+            if not (
+                0 <= row < rows and 0 <= column < columns and grid[row][column] != "#"
             ):
-                new_start_position.add(new_position)
+                continue
+            if (t_row, t_column, row, column) in set_:
+                continue
+            if abs(t_row) > 4 or abs(t_column) > 4:
+                continue
+            set_[(t_row, t_column, row, column)] = d
+            for delta_row, delta_column in [[-1, 0], [0, 1], [1, 0], [0, -1]]:
+                queue.append(
+                    (t_row, t_column, row + delta_row, column + delta_column, d + 1)
+                )
+        return set_
 
-        return new_start_position
+    def solve_(self, d, v, length):
+        grid, rows, columns, _, _ = self.data
+        amount = (length - d) // rows
+        if (d, v, length) in self.SOLVE:
+            return self.SOLVE[(d, v, length)]
+        result = 0
+        for x in range(1, amount + 1):
+            if d + rows * x <= length and (d + rows * x) % 2 == (length % 2):
+                result += (x + 1) if v == 2 else 1
+        self.SOLVE[(d, v, length)] = result
+        return result
 
-    def solve_(self, num_steps):
-        start_position = self.get_starting_point(self.data)
-
-        curr_positions = {start_position}
-        for _ in range(num_steps):
-            next_positions = set()
-            for pos in curr_positions:
-                out = self.take_one_step(self.data, pos)
-                next_positions = next_positions.union(out)
-
-            curr_positions = next_positions
-
-        return len(curr_positions)
+    def solve21(self, part1, steps=6):
+        grid, rows, columns, start_row, start_column = self.data
+        set_ = self.find_d(start_row, start_column)
+        length = steps
+        answer = 0
+        for row in range(rows):
+            for column in range(columns):
+                if (0, 0, row, column) in set_:
+                    options = [-3, -2, -1, 0, 1, 2, 3]
+                    for t_row in options:
+                        for t_column in options:
+                            if part1 and (t_row != 0 or t_column != 0):
+                                continue
+                            d = set_[(t_row, t_column, row, column)]
+                            if d % 2 == length % 2 and d <= length:
+                                answer += 1
+                            if t_row in [min(options), max(options)] and t_column in [
+                                min(options),
+                                max(options),
+                            ]:
+                                answer += self.solve_(d, 2, length)
+                            elif t_row in [min(options), max(options)] or t_column in [
+                                min(options),
+                                max(options),
+                            ]:
+                                answer += self.solve_(d, 1, length)
+        return answer
 
     def part1(self, steps=64):
         """Solve part 1"""
-        return self.solve_(steps)
+        return self.solve21(True, steps)
 
-    def part2(self):
+    def part2(self, steps=26_501_365):
         """Solve part 2"""
+        return self.solve21(False, steps)
 
 
 if __name__ == "__main__":
