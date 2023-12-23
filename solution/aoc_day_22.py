@@ -23,18 +23,18 @@ class AocSolution(AocBaseClass):
         lowest_level = None
         for line, row in [d.split("~") for d in puzzle_input.split("\n")]:
             brick = Brick(
-                [int(v) for v in line.split(",")], [int(v) for v in row.split(",")]
+                [int(v) for v in line.split(",")],
+                [int(v) for v in row.split(",")],
             )
             bricks.put(brick)
             if lowest_level is None or lowest_level > brick.floor:
                 lowest_level = brick.floor
-        return bricks, lowest_level
+        return self.solve_(bricks, lowest_level)
 
     DAY = 22
 
-    def solve_(self):
-        bricks, floor_level = self.data
-
+    @staticmethod
+    def solve_(bricks, floor_level):
         stable_bricks = []
         while not bricks.empty():
             brick = bricks.get()
@@ -49,7 +49,9 @@ class AocSolution(AocBaseClass):
                         and stable_brick.start[1] <= brick.end[1]
                         and brick.start[1] <= stable_brick.end[1]
                     ):
-                        stable_brick_top = stable_brick.floor + stable_brick.height
+                        stable_brick_top = sum(
+                            (stable_brick.floor, stable_brick.height)
+                        )
                         if stable_brick_top > support_level:
                             support, support_level = [], stable_brick_top
                         if stable_brick_top == support_level:
@@ -64,9 +66,11 @@ class AocSolution(AocBaseClass):
         counter_p1 = 0
         for stable_brick in stable_bricks:
             if len(stable_brick.supporting) > 0:
-                if sum(1 for s in stable_brick.supporting if len(s.support) > 1) == len(
-                    stable_brick.supporting
-                ):
+                if sum(
+                    1
+                    for supporting in stable_brick.supporting
+                    if len(supporting.support) > 1
+                ) == len(stable_brick.supporting):
                     counter_p1 += 1
             else:
                 counter_p1 += 1
@@ -95,11 +99,13 @@ class AocSolution(AocBaseClass):
 
     def part1(self):
         """Solve part 1"""
-        return self.solve_()[0]
+        part_1, _ = self.data
+        return part_1
 
     def part2(self):
         """Solve part 2"""
-        return self.solve_()[1]
+        _, part_2 = self.data
+        return part_2
 
 
 if __name__ == "__main__":
