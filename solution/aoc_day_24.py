@@ -1,7 +1,6 @@
-# aoc_day_23.py
+# aoc_day_24.py
 import itertools
 import re
-
 from z3 import z3
 
 from solution.aoc_base import AocBaseClass
